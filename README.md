@@ -1,5 +1,5 @@
 # gochat
-The very simple and glucky chat habe been made to try WS.
+The very simple and glucky chat have been made to try WS.
 
 Run websocket server by 
 ```go run main.go```
