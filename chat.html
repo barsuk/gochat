@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WS try</title>
+</head>
+<body>
+<h1>2020 год чатов</h1>
+<form onsubmit="socket.send(this.msg.value);return false;">
+    <label for="msg">Пиши: <input type="text" name="msg" id="msg"></label>
+    <input type="submit">
+</form>
+<div id="dialog"></div>
+<script>
+    let socket = new WebSocket("ws://localhost:5555/chatserver");
+    socket.dialog = document.getElementById("dialog");
+
+    socket.onopen = function (e) {
+        let answer = document.createElement("p");
+        answer.innerText = "[open] Соединение установлено\n";
+        answer.innerText += "Отправляем данные на сервер\n";
+        // socket.dialog.appendChild(answer);
+        socket.dialog.prepend(answer);
+        socket.send("Меня зовут Джон");
+    };
+
+    socket.onmessage = function (event) {
+        let answer = document.createElement("p");
+        answer.innerText += `[message] Данные получены с сервера: ${event.data}\n`;
+        // socket.dialog.appendChild(answer);
+        socket.dialog.prepend(answer);
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            let answer = document.createElement("p");
+            answer.innerText = `[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}\n`;
+            // socket.dialog.appendChild(answer);
+            socket.dialog.appendChild(answer);
+        } else {
+            // например, сервер убил процесс или сеть недоступна
+            // обычно в этом случае event.code 1006
+            let answer = document.createElement("p");
+            answer.innerText += '[close] Соединение прервано';
+            // socket.dialog.appendChild(answer);
+            socket.dialog.appendChild(answer);
+        }
+    };
+
+    socket.onerror = function (error) {
+        alert(`[error] ${error.message}`);
+    };
+</script>
+
+</body>
+</html>

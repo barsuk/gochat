@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WS try</title>
+</head>
+<body>
+<h1>2020 год реакта</h1>
+<input type="submit" onclick="socket.send('ping');">
+<div id="echo"></div>
+<div id="dialog"></div>
+<script>
+    let socket = new WebSocket("ws://localhost:5555/echo");
+    socket.dialog = document.getElementById("dialog");
+
+    socket.onopen = function (e) {
+        let answer = document.createElement("p");
+        answer.innerText = "[open] Соединение установлено\n";
+        answer.innerText += "Отправляем данные на сервер\n";
+        socket.dialog.appendChild(answer);
+        socket.send("Меня зовут Джон");
+    };
+
+    socket.onmessage = function (event) {
+        let answer = document.createElement("p");
+        answer.innerText += `[message] Данные получены с сервера: ${event.data}\n`;
+        socket.dialog.appendChild(answer);
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            let answer = document.createElement("p");
+            answer.innerText = `[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}\n`;
+            socket.dialog.appendChild(answer);
+        } else {
+            // например, сервер убил процесс или сеть недоступна
+            // обычно в этом случае event.code 1006
+            let answer = document.createElement("p");
+            answer.innerText += '[close] Соединение прервано';
+            socket.dialog.appendChild(answer);
+        }
+    };
+
+    socket.onerror = function (error) {
+        alert(`[error] ${error.message}`);
+    };
+</script>
+
+</body>
+</html>
